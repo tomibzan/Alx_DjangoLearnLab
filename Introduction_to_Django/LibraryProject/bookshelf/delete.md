@@ -1,5 +1,7 @@
 # Command
 
+from bookshelf.models import Book
+
 retrieved_book.delete()
 
 # Optional: Check all books
