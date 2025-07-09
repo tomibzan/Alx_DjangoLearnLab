@@ -5,7 +5,7 @@ from .models import Book
 
 
 class BookAdmin(admin.ModelAdmin):
-    List_fiter = ("title", "author", "publication_year")
+    list_fiter = ("title", "author", "publication_year")
 
 
 admin.site.register(Book)
