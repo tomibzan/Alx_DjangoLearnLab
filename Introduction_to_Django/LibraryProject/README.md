@@ -1,2 +1,3 @@
 Project Introduction
-this is a beginer for django training
+This is part of the ALX week9 Django learning
+task 0 solution.
