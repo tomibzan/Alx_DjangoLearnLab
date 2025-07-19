@@ -1,10 +1,11 @@
 from django.views.generic.detail import DetailView
-from .models import Book, Library
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Book, Library, UserProfile
+
+# === Existing Views ===
 
 
 @login_required
@@ -46,3 +47,40 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return render(request, 'relationship_app/logout.html')
+
+
+# === New Role-Based Views with Access Control ===
+def is_admin(user):
+    try:
+        return user.userprofile.role == 'Admin'
+    except UserProfile.DoesNotExist:
+        return False
+
+
+def is_librarian(user):
+    try:
+        return user.userprofile.role == 'Librarian'
+    except UserProfile.DoesNotExist:
+        return False
+
+
+def is_member(user):
+    try:
+        return user.userprofile.role == 'Member'
+    except UserProfile.DoesNotExist:
+        return False
+
+
+@user_passes_test(is_admin, login_url='/')
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+
+@user_passes_test(is_librarian, login_url='/')
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+
+@user_passes_test(is_member, login_url='/')
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
