@@ -20,7 +20,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', include('bookshelf.urls')),            # bookshelf handles root
-    path('relationship/', include('relationship_app.urls')),  # give relationship_app a prefix
+    # give relationship_app a prefix
+    path('books/', include('relationship_app.urls')),
     path('admin/', admin.site.urls),
 ]
-
