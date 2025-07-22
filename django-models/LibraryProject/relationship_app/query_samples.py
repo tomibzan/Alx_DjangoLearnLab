@@ -1,46 +1,31 @@
 from relationship_app.models import Author, Book, Library, Librarian
 
+# Query 1: All books by a specific author
 
-def query_all_books_by_author(author_name):
+
+def books_by_author(author_name):
     try:
         author = Author.objects.get(name=author_name)
-        books = Book.objects.filter(author=author)
-        print(f"Books by {author_name}:")
-        for book in books:
-            print(f"- {book.title}")
+        return Book.objects.filter(author=author)
     except Author.DoesNotExist:
-        print(f"No author found with the name '{author_name}'")
+        return []
+
+# Query 2: All books in a library
 
 
-def list_all_books_in_library(library_name):
+def books_in_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        books = library.books.all()
-        print(f"Books in {library_name}:")
-        for book in books:
-            print(f"- {book.title}")
+        return library.books.all()
     except Library.DoesNotExist:
-        print(f"No library found with the name '{library_name}'")
+        return []
+
+# Query 3: Librarian for a library
 
 
-def retrieve_librarian_for_library(library_name):
+def librarian_for_library(library_name):
     try:
         library = Library.objects.get(name=library_name)
-        librarian = Librarian.objects.get(library=library)
-        print(f"Librarian for {library_name}: {librarian.name}")
-    except Library.DoesNotExist:
-        print(f"No library found with the name '{library_name}'")
-    except Librarian.DoesNotExist:
-        print(f"No librarian assigned to {library_name}")
-
-
-# Example usage:
-if __name__ == "__main__":
-    print("Querying all books by J.K. Rowling:")
-    query_all_books_by_author("J.K. Rowling")
-
-    print("\nListing all books in Central Library:")
-    list_all_books_in_library("Central Library")
-
-    print("\nRetrieving librarian for Central Library:")
-    retrieve_librarian_for_library("Central Library")
+        return Librarian.objects.get(library=library)
+    except (Library.DoesNotExist, Librarian.DoesNotExist):
+        return None
