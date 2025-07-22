@@ -2,19 +2,19 @@
 
 from django.views.generic.detail import DetailView
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import permission_required, user_passes_test, login_required
-from .models import Book, Library, UserProfile
+from .models import Library
 from .forms import BookForm  # Make sure this exists
-
-# === Existing Views ===
 
 
 @login_required
 def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+    books = Book.objects.select_related(
+        'author').all()  # Efficient query with author
+    return render(request, 'list_books.html', {'books': books})
 
 
 class LibraryDetailView(DetailView):
