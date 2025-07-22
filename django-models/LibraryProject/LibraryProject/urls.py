@@ -21,6 +21,6 @@ from django.urls import include, path
 urlpatterns = [
     path('', include('bookshelf.urls')),            # bookshelf handles root
     # give relationship_app a prefix
-    path('books/', include('relationship_app.urls')),
+    path('relationship_app', include('relationship_app.urls')),
     path('admin/', admin.site.urls),
 ]
