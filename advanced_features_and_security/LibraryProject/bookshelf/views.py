@@ -36,5 +36,5 @@ def article_delete(request, pk):
     article = get_object_or_404(Article, pk=pk)
     if request.method == 'POST':
         article.delete()
-        return redirect('article_list')
+        return redirect('book_list')
     return render(request, 'bookshelf/article_confirm_delete.html', {'article': article})
