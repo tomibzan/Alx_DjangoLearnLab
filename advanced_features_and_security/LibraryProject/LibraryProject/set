@@ -94,8 +94,8 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Custom User Model - This is the corrected line
-AUTH_USER_MODEL = "bookshelf.CustomUser"
+# Custom User Model - This is the correct
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
