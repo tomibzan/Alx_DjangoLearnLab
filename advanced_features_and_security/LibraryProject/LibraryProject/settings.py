@@ -95,7 +95,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Custom User Model
-AUTH_USER_MODEL = 'auth.CustomUser'  # Adjust this based on your app name
+AUTH_USER_MODEL = 'bookshelf.CustomUser'  # Adjust this based on your app name
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
