@@ -1,5 +1,5 @@
 """
-Django settings for advanced_features_and_security project.
+Django settings for LibraryProject project.
 """
 
 import os
@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Your custom apps would go here
+    'bookshelf',  # Make sure your app is included
 ]
 
 MIDDLEWARE = [
@@ -37,7 +37,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'advanced_features_and_security.urls'
+ROOT_URLCONF = 'LibraryProject.urls'
 
 TEMPLATES = [
     {
@@ -55,7 +55,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'advanced_features_and_security.wsgi.application'
+WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
 # Database
 DATABASES = {
@@ -94,8 +94,8 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Custom User Model
-AUTH_USER_MODEL = 'bookshelf.CustomUser'  # Adjust this based on your app name
+# Custom User Model - This is the corrected line
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
