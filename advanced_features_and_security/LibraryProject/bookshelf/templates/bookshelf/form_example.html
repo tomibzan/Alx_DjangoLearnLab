@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Form</title>
+</head>
+<body>
+    <h1>Add/Edit Book</h1>
+    
+    <!-- Form with CSRF token protection -->
+    <form method="post">
+        <!-- CSRF token - essential for CSRF protection -->
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit">Submit</button>
+    </form>
+    
+    <a href="{% url 'book_list' %}">Back to Book List</a>
+</body>
+</html>
