@@ -1,5 +1,5 @@
 """
-Django settings for advanced_features_and_security project.
+Django settings for LibraryProject project.
 """
 
 import os
@@ -12,9 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'your-secret-key-here'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set to False in production
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'your-domain.com']
 
 # Application definition
 INSTALLED_APPS = [
@@ -24,7 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Your custom apps would go here
+    'bookshelf',
 ]
 
 MIDDLEWARE = [
@@ -35,9 +36,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Content Security Policy Middleware (if using django-csp)
+    # 'csp.middleware.CSPMiddleware',
 ]
 
-ROOT_URLCONF = 'advanced_features_and_security.urls'
+ROOT_URLCONF = 'LibraryProject.urls'
 
 TEMPLATES = [
     {
@@ -55,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'advanced_features_and_security.wsgi.application'
+WSGI_APPLICATION = 'LibraryProject.wsgi.application'
 
 # Database
 DATABASES = {
@@ -89,13 +92,46 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Custom User Model
-AUTH_USER_MODEL = 'bookshelf.CustomUser'  # Adjust this based on your app name
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# === SECURITY SETTINGS ===
+# Security settings to protect against common vulnerabilities
+
+# Security Middleware Settings
+SECURE_BROWSER_XSS_FILTER = True  # Adds X-XSS-Protection header
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Adds X-Content-Type-Options header
+X_FRAME_OPTIONS = 'DENY'  # Prevents clickjacking attacks
+
+# HTTPS Settings (set to True in production with HTTPS)
+SECURE_SSL_REDIRECT = True  # Redirect all HTTP requests to HTTPS
+SECURE_HSTS_SECONDS = 31536000  # 1 year HSTS
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Cookie Security Settings
+CSRF_COOKIE_SECURE = True  # CSRF cookies only sent over HTTPS
+SESSION_COOKIE_SECURE = True  # Session cookies only sent over HTTPS
+CSRF_COOKIE_HTTPONLY = True  # Prevent CSRF cookie access via JavaScript
+SESSION_COOKIE_HTTPONLY = True  # Prevent session cookie access via JavaScript
+
+# Additional Security Headers
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+# === CONTENT SECURITY POLICY SETTINGS ===
+# Uncomment and configure if using django-csp package
+# CSP_DEFAULT_SRC = ("'self'",)
+# CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'")
+# CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+# CSP_IMG_SRC = ("'self'", "data:")
+# CSP_FONT_SRC = ("'self'",)
+# CSP_CONNECT_SRC = ("'self'",)
