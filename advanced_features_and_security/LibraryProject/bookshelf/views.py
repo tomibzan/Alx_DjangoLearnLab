@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import permission_required
 from django.db import models
 from .models import Book, Article
-from .forms import BookForm, ArticleForm, BookSearchForm
+from .forms import ExampleForm, ArticleForm, BookSearchForm
 
 
 def bookshelf(request):
@@ -21,7 +21,7 @@ def book_list(request):
 def book_create(request):
     """Create a new book with proper CSRF and input validation"""
     if request.method == 'POST':
-        form = BookForm(request.POST)
+        form = ExampleForm(request.POST)
         if form.is_valid():
             # Safe ORM usage - no direct SQL injection risk
             form.save()
