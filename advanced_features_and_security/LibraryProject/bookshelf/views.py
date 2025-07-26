@@ -2,24 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import permission_required
 from django.db import models
-from django import forms
 from .models import Book, Article
-
-# Secure form for book creation/editing
-
-
-class BookForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = ['title', 'author', 'publication_year']
-
-    def clean_publication_year(self):
-        """Validate publication year to prevent invalid data"""
-        year = self.cleaned_data['publication_year']
-        if year < 0 or year > 2024:
-            raise forms.ValidationError(
-                "Please enter a valid publication year.")
-        return year
+from .forms import BookForm, ArticleForm, BookSearchForm
 
 
 def bookshelf(request):
@@ -48,22 +32,39 @@ def book_create(request):
     return render(request, 'bookshelf/form_example.html', {'form': form})
 
 
+def book_edit(request, pk):
+    """Edit an existing book"""
+    book = get_object_or_404(Book, pk=pk)
+
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm(instance=book)
+
+    return render(request, 'bookshelf/form_example.html', {'form': form})
+
+
 def book_search(request):
-    """Secure search functionality using Django ORM parameterization"""
-    query = request.GET.get('q', '').strip()
+    """Secure search functionality using Django forms and ORM"""
+    form = BookSearchForm(request.GET)
     books = []
 
-    if query:
-        # Safe parameterized query using Django ORM
-        # This prevents SQL injection automatically
-        books = Book.objects.filter(
-            models.Q(title__icontains=query) |
-            models.Q(author__icontains=query)
-        )
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        if query:
+            # Safe parameterized query using Django ORM
+            # This prevents SQL injection automatically
+            books = Book.objects.filter(
+                models.Q(title__icontains=query) |
+                models.Q(author__icontains=query)
+            )
 
     return render(request, 'bookshelf/book_search.html', {
-        'books': books,
-        'query': query
+        'form': form,
+        'books': books
     })
 
 # Article views with permission-based security
@@ -81,21 +82,15 @@ def article_list(request):
 def article_create(request):
     """Create article with CSRF protection and input validation"""
     if request.method == 'POST':
-        # CSRF token automatically validated by Django middleware
-        title = request.POST.get('title', '').strip()
-        content = request.POST.get('content', '').strip()
-
-        # Input validation and sanitization
-        if title and content:
+        form = ArticleForm(request.POST)
+        if form.is_valid():
             # Safe ORM usage - no string concatenation or direct SQL
-            article = Article.objects.create(
-                title=title[:200],  # Truncate to model max_length
-                content=content,
-                published=False
-            )
+            form.save()
             return redirect('article_list')
+    else:
+        form = ArticleForm()
 
-    return render(request, 'bookshelf/article_form.html')
+    return render(request, 'bookshelf/article_form.html', {'form': form})
 
 
 @permission_required('bookshelf.can_edit', raise_exception=True)
@@ -106,18 +101,14 @@ def article_edit(request, pk):
 
     if request.method == 'POST':
         # CSRF protection handled automatically
-        title = request.POST.get('title', '').strip()
-        content = request.POST.get('content', '').strip()
-
-        # Input validation
-        if title and content:
-            # Safe ORM usage - no SQL injection risk
-            article.title = title[:200]
-            article.content = content
-            article.save()
+        form = ArticleForm(request.POST, instance=article)
+        if form.is_valid():
+            form.save()
             return redirect('article_list')
+    else:
+        form = ArticleForm(instance=article)
 
-    return render(request, 'bookshelf/article_form.html', {'article': article})
+    return render(request, 'bookshelf/article_form.html', {'form': form, 'article': article})
 
 
 @permission_required('bookshelf.can_delete', raise_exception=True)
