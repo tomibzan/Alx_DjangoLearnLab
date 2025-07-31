@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework import routers
 from django.http import HttpResponse
 
@@ -28,4 +28,5 @@ def home(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/', home, name='api-home'),
+    path('api/', include('api.urls')),
 ]
