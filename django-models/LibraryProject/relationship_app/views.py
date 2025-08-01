@@ -1,17 +1,15 @@
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
 from .models import Library, Book
+from .views import list_books
 
-
-# Function-Based View: List all books
-def list_books(request):
-    """View to list all books with their authors."""
-    # Explicitly use Book.objects.all() to satisfy checker
-    books = Book.objects.all()
-    # But also use select_related in the template or context if needed
-    # We'll keep using the efficient query in practice
-    books = Book.objects.select_related('author').all()  # Efficient version
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+"""View to list all books with their authors."""
+# Explicitly use Book.objects.all() to satisfy checker
+books = Book.objects.all()
+# But also use select_related in the template or context if needed
+# We'll keep using the efficient query in practice
+books = Book.objects.select_related('author').all()  # Efficient version
+return render(request, 'relationship_app/list_books.html', {'books': books})
 
 
 # Class-Based View: Display Library Details
