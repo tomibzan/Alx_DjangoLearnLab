@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views.generic.detail import DetailView
 from .models import Library, Book
-from .views import list_books
+
+
+def list_books(request):
 
 """View to list all books with their authors."""
 # Explicitly use Book.objects.all() to satisfy checker
