@@ -1,0 +1,43 @@
+/* blog/static/blog/css/style.css */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    background: #007acc;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.post {
+    background: white;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.post h2 {
+    margin-top: 0;
+    color: #007acc;
+}
+
+.post .meta {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+footer {
+    text-align: center;
+    margin-top: 30px;
+    color: #888;
+    font-size: 0.9em;
+}
