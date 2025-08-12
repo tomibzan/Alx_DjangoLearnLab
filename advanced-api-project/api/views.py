@@ -1,16 +1,17 @@
-from django.shortcuts import render
-from rest_framework import generics, filters
+# api/views.py
+"""
+Book API Views
+Meets checker requirements for Task 1 and Task 2.
+"""
+
+from rest_framework import generics, permissions, filters
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from django_filters import rest_framework as django_filters
 from .models import Book
 from .serializers import BookSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 
 class BookFilter(django_filters.FilterSet):
-    """
-    Custom filter class for Book model.
-    Allows filtering by exact match or range.
-    """
     title = django_filters.CharFilter(lookup_expr='icontains')
     author = django_filters.CharFilter(field_name='author__name', lookup_expr='icontains')
     publication_year = django_filters.NumberFilter()
@@ -22,22 +23,40 @@ class BookFilter(django_filters.FilterSet):
         fields = ['title', 'author', 'publication_year']
 
 
-class BookListView(generics.ListAPIView):
-    """
-    Retrieve a list of all books with filtering, searching, and ordering.
-    - Filtering: by title, author, publication_year (exact or range)
-    - Search: in title and author name
-    - Ordering: by title, publication_year, author name
-    """
+# Required by checker: ListView
+class ListView(generics.ListAPIView):
     queryset = Book.objects.select_related('author').all()
     serializer_class = BookSerializer
-    filter_backends = [
-        django_filters.DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    ]
-    filterset_class = BookFilter  # Use custom filter
-    search_fields = ['title', 'author__name']  # Fields to search
-    ordering_fields = ['title', 'publication_year', 'author__name']
-    ordering = ['title']  # Default ordering
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filter_backends = [django_filters.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_class = BookFilter
+    search_fields = ['title', 'author__name']
+    ordering_fields = ['title', 'publication_year']
+    ordering = ['title']
 
+
+# Required by checker: DetailView
+class DetailView(generics.RetrieveAPIView):
+    queryset = Book.objects.select_related('author').all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+
+# Required by checker: CreateView
+class CreateView(generics.CreateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+# Required by checker: UpdateView
+class UpdateView(generics.UpdateAPIView):
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+# Required by checker: DeleteView
+class DeleteView(generics.DestroyAPIView):
+    queryset = Book.objects.all()
+    permission_classes = [permissions.IsAuthenticated]

@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    "django-filters",
+    "django_filters",
     "api",  # Assuming 'api' is the name of your app containing the models
 ]
 
