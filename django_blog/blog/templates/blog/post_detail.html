@@ -16,7 +16,7 @@
 
 <div class="actions">
     {% if user == object.author %}
-        <a href="{% url 'blog:post-update' object.pk %}" class="btn">Edit</a>
+        <a href="{% url 'blog:post-update' object.pk %}" class="btn">update</a>
         <a href="{% url 'blog:post-delete' object.pk %}" class="btn btn-danger">Delete</a>
     {% endif %}
     <a href="{% url 'blog:post-list' %}" class="btn">Back to All Posts</a>

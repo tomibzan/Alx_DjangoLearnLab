@@ -1,17 +1,19 @@
+# blog/views.py
+
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
-from .models import Post
-from .forms import PostForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django import forms
+from .models import Post
+from .forms import PostForm
 
-# Extend UserCreationForm to include email
-class CustomUserCreationForm(UserCreationForm):
+
+# Custom Registration Form
+class CustomUserCreationForm(forms.UserCreationForm):
     email = forms.EmailField(required=True)
 
     class Meta:
@@ -24,7 +26,9 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
-    
+
+
+# Blog Views
 class PostListView(ListView):
     model = Post
     template_name = 'blog/post_list.html'
@@ -32,9 +36,11 @@ class PostListView(ListView):
     ordering = ['-published_date']
     paginate_by = 5
 
+
 class PostDetailView(DetailView):
     model = Post
-    template_name = 'blog/post_detail.html'        
+    template_name = 'blog/post_detail.html'
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -47,6 +53,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('blog:post-detail', kwargs={'pk': self.object.pk})
+
 
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
@@ -64,6 +71,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         post = self.get_object()
         return self.request.user == post.author
 
+
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
@@ -71,28 +79,27 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         post = self.get_object()
-        return self.request.user == post.author    
+        return self.request.user == post.author
 
+
+# Auth Views
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Log in right after registration
-            return redirect('blog:home')
+            login(request, user)
+            return redirect('blog:post-list')
     else:
         form = CustomUserCreationForm()
     return render(request, 'blog/register.html', {'form': form})
 
 
-def home(request):
-    """Simple home view"""
-    return render(request, 'blog/home.html')
-
-
 @login_required
 def profile(request):
     return render(request, 'blog/profile.html')
+
+
 def edit_profile(request):
     if request.method == 'POST':
         request.user.email = request.POST.get('email')
