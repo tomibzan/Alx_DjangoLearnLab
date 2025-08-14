@@ -1,0 +1,15 @@
+<!-- blog/templates/blog/edit_profile.html -->
+{% extends 'blog/base_auth.html' %}
+
+{% block title %}Edit Profile{% endblock %}
+
+{% block content %}
+<h2>Edit Profile</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="email">Email:</label>
+    <input type="email" name="email" value="{{ user.email }}" required>
+    <button type="submit">Update</button>
+</form>
+<a href="{% url 'blog:profile' %}">Cancel</a>
+{% endblock %}

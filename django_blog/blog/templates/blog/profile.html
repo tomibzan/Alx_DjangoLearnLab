@@ -1,0 +1,14 @@
+<!-- blog/templates/blog/profile.html -->
+{% extends 'blog/base_auth.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h2>Your Profile</h2>
+<ul>
+    <li><strong>Username:</strong> {{ user.username }}</li>
+    <li><strong>Email:</strong> {{ user.email }}</li>
+    <li><strong>Member since:</strong> {{ user.date_joined|date:"F d, Y" }}</li>
+</ul>
+<a href="{% url 'blog:logout' %}">Logout</a>
+{% endblock %}

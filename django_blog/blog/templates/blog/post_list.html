@@ -1,0 +1,42 @@
+<!-- blog/templates/blog/post_list.html -->
+{% extends 'blog/base.html' %}
+{% load static %}
+
+{% block title %}Blog Posts{% endblock %}
+
+{% block content %}
+<h2>📝 All Blog Posts</h2>
+
+<a href="{% url 'blog:post-create' %}" class="btn">Write a New Post</a>
+
+{% if posts %}
+    {% for post in posts %}
+        <div class="post">
+            <h3><a href="{% url 'blog:post-detail' post.pk %}">{{ post.title }}</a></h3>
+            <p class="meta">
+                By {{ post.author.username }} on {{ post.published_date|date:"F d, Y" }}
+            </p>
+            <p>{{ post.content|truncatewords:50 }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No posts yet. Be the first to <a href="{% url 'blog:post-create' %}">write one</a>!</p>
+{% endif %}
+
+<!-- Pagination -->
+{% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}
