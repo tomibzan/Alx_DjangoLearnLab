@@ -11,9 +11,25 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
+from django.db.models import Q
 
 # ----- Auth -----
 
+def search_posts(request):
+    query = request.GET.get('q', '')
+    results = []
+    if query:
+        results = Post.objects.filter(
+            Q(title__icontains=query) |
+            Q(content__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+    return render(request, 'blog/search_results.html', {'query': query, 'results': results})
+
+def posts_by_tag(request, tag_slug):
+    tag = get_object_or_404(Tag, slug=tag_slug)
+    posts = Post.objects.filter(tags__in=[tag])
+    return render(request, 'blog/posts_by_tag.html', {'tag': tag, 'posts': posts})
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
@@ -124,6 +140,23 @@ def delete_comment(request, pk):
         return redirect('post_detail', pk=comment.post.pk)
 
     return render(request, 'blog/comment_confirm_delete.html', {'comment': comment})
+
+@login_required
+def profile(request):
+    return render(request, 'blog/profile.html')
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = UserChangeForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+    else:
+        form = UserChangeForm(instance=request.user)
+
+    return render(request, 'blog/edit_profile.html', {'form': form})
+
 # ----- Blog -----
 class PostListView(ListView):
     model = Post

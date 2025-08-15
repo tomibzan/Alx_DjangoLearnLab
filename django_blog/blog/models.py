@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 class Post(models.Model):
     """Represents a blog post."""
@@ -14,6 +15,7 @@ class Post(models.Model):
         related_name="posts",
         help_text="The user who wrote this post",
     )
+    tags = TaggableManager()
 
     def __str__(self):
         return self.title
