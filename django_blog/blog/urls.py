@@ -2,6 +2,7 @@
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView
 from . import views
+from .views import PostByTagListView
 
 app_name = "blog"
 
@@ -12,6 +13,7 @@ urlpatterns = [
     path("post/new/", views.PostCreateView.as_view(), name="post-create"),
     path("post/<int:pk>/update/", views.PostUpdateView.as_view(), name="post-update"),
     path("post/<int:pk>/delete/", views.PostDeleteView.as_view(), name="post-delete"),
+    path('tags/<str:tag>/', views.PostByTagListView.as_view(), name='posts_by_tag'),
 
     # Auth
     path("register/", views.register, name="register"),
