@@ -14,7 +14,7 @@
             <a class="navbar-brand" href="{% url 'blog:post-list' %}">Django Blog</a>
             
             <!-- Search Form (Added to Navbar) -->
-            <form method="get" action="{% url 'search_posts' %}" class="d-flex ms-auto">
+            <form method="get" action="{% url 'blog:search_posts' %}" class="d-flex ms-auto">
                 <input class="form-control me-2" type="search" name="q" placeholder="Search..." value="{{ request.GET.q }}">
                 <button class="btn btn-outline-light" type="submit">Search</button>
             </form>
