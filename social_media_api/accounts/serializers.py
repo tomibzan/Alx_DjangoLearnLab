@@ -33,15 +33,18 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password2')
-        user = User(
+        # ✅ use create_user instead of manual User()
+        user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
+            last_name=validated_data['last_name'],
+            password=validated_data['password']
         )
-        user.set_password(validated_data['password'])
-        user.save()
+        # ✅ create Token for user
+        Token.objects.create(user=user)
         return user
+
 
 class UserSerializer(serializers.ModelSerializer):
     follower_count = serializers.ReadOnlyField()
