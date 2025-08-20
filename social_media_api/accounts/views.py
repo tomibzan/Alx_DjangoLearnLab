@@ -10,6 +10,9 @@ User = get_user_model()
 
 
 class RegisterView(APIView):
+    """
+    Register a new user and return user data + auth token.
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -19,12 +22,15 @@ class RegisterView(APIView):
             token, created = Token.objects.get_or_create(user=user)
             return Response({
                 "user": UserSerializer(user).data,
-                "token": token.key  # ✅ Return token key
+                "token": token.key
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
+    """
+    Authenticate user and return user data + auth token.
+    """
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
@@ -33,16 +39,22 @@ class LoginView(APIView):
 
         user = authenticate(username=username, password=password)
         if not user:
-            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Invalid credentials"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             "user": UserSerializer(user).data,
-            "token": token.key  # ✅ Return token
+            "token": token.key
         }, status=status.HTTP_200_OK)
 
 
 class ProfileView(APIView):
+    """
+    View or update authenticated user's profile.
+    """
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
@@ -56,4 +68,3 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# Create your views here.
