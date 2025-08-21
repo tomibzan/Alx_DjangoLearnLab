@@ -1,49 +1,61 @@
 # posts/views.py
-from rest_framework import viewsets, permissions, filters
-from rest_framework.decorators import action
+from rest_framework import generics, permissions, viewsets
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission: only the author can edit or delete.
-    """
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj.author == request.user
-
-
+# ViewSets for router
 class PostViewSet(viewsets.ModelViewSet):
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
-    permission_classes = [IsOwnerOrReadOnly]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'content']
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all().order_by('-created_at')
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+# Class-based views for custom endpoints
+class PostListCreateView(generics.ListCreateAPIView):
+    queryset = Post.objects.all().order_by('-created_at')
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(detail=True, methods=['get'], url_path='comments', url_name='comments')
-    def get_comments(self, request, pk=None):
-        post = get_object_or_404(Post, pk=pk)
-        comments = post.comments.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
+class CommentListCreateView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        return Comment.objects.filter(post_id=self.kwargs['post_id']).order_by('-created_at')
 
     def perform_create(self, serializer):
-        post_id = self.request.data.get('post')
-        post = get_object_or_404(Post, id=post_id)
-        serializer.save(author=self.request.user, post=post)
+        serializer.save(author=self.request.user, post_id=self.kwargs['post_id'])
+
+class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+# 🚀 New feed view
+class FeedView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        # Get posts only from people this user follows
+        following_users = user.following.all()
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+        serializer = PostSerializer(posts, many=True)
+        return Response(serializer.data)
